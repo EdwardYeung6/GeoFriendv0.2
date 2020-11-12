@@ -71,6 +71,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
         // ----- This is used to display current location information -----
+           //create geofencing
+        geofencing = LocationServices.getGeofencingClient(this);
+
     }
 
     /**
@@ -96,6 +99,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             for(int i = 0; i < lma.landmarks.size(); i++) {
                 mMap.addMarker(new MarkerOptions().position(lma.landmarks.get(i).getLocation()).title(lma.landmarks.get(i).getName()));
                 //Pull markers from database and put them into the map
+                
+                //addcircle
+                   addCircle(lma.landmarks.get(i).getLocation(),GEOFENCE_RADIUS);
 
             }
         }
@@ -186,5 +192,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onPause() {
         super.onPause();
         locationClient.removeLocationUpdates(locationCallback);
+    }
+      private void addCircle(LatLng latLng,float radius){
+        CircleOptions circleOptions=new CircleOptions();
+        circleOptions.center(latLng);
+        circleOptions.radius(radius);
+        circleOptions.strokeColor(Color.argb(255,255,0,0));
+        circleOptions.fillColor(Color.argb(64,255,0,0));
+        circleOptions.strokeWidth(4);
+        mMap.addCircle(circleOptions);
     }
 }
