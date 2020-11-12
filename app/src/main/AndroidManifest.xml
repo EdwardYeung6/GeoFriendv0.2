@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.geofriend.geofriend">
+
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the "MyLocation" functionality.
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!--         The INTERNET/ACCESS_FINE_LOCATION permissions are required to get users current location. -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!--
-         The ACCESS_BACKGROUND_LOCATION permissions An app requires background location access
-         if a feature within the app constantly shares location with other users or uses the Geofencing API.
-         On Android 10 (API level 29) and higher, you must declare this explicitly!
-    -->
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -24,7 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".getUserLocationDetails"></activity>
+
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -33,20 +24,23 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
 
+        <activity android:name=".getUserLocationDetails" />
         <activity
             android:name=".CurrentLocation"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LandmarkPopUpActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.LandmarkTheme"></activity>
+            android:theme="@style/AppTheme.LandmarkTheme" />
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
@@ -60,10 +54,33 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity_adddata" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+
+        <receiver
+            android:name=".GeofenceBoardCastReceiver"
+            android:enabled="true"
+            android:exported="true" />
 
         <service android:name=".GetAddressIntentService" />
-
-        <activity android:name=".activity_adddata" />
     </application>
+
+    <!-- The INTERNET/ACCESS_FINE_LOCATION permissions are required to get users current location. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--
+         The ACCESS_BACKGROUND_LOCATION permissions An app requires background location access
+         if a feature within the app constantly shares location with other users or uses the Geofencing API.
+         On Android 10 (API level 29) and higher, you must declare this explicitly!
+    -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 </manifest>
