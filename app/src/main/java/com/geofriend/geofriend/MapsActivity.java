@@ -3,16 +3,19 @@ package com.geofriend.geofriend;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -21,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -30,9 +34,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     LandmarkMapAdapter lma = new LandmarkMapAdapter();
-
+    private float GEOFENCE_RADIUS=200;
     private double mLat, mLng, cLat, cLng;
-
 
 
     // Location variables used to request permissions
@@ -45,7 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //private LocationAddressResultReceiverTest addressResultReceiver;
 
     private TextView userLocation;
-
+    private GeofencingClient geofencing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         };
         // ----- This is used to display current location information -----
+
+        //create geofencing
+        geofencing = LocationServices.getGeofencingClient(this);
+
     }
 
     /**
@@ -92,11 +99,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         final String landmarkID = "";
 
-        if(!lma.landmarks.isEmpty()) {
-            for(int i = 0; i < lma.landmarks.size(); i++) {
+        if (!lma.landmarks.isEmpty()) {
+            for (int i = 0; i < lma.landmarks.size(); i++) {
                 mMap.addMarker(new MarkerOptions().position(lma.landmarks.get(i).getLocation()).title(lma.landmarks.get(i).getName()));
                 //Pull markers from database and put them into the map
-
+                addCircle(lma.landmarks.get(i).getLocation(),GEOFENCE_RADIUS);
             }
         }
 
@@ -111,13 +118,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                mLng = la.landmarks.get(Integer.parseInt(marker.getId().substring(1))).getLocation().longitude;
 
 
-
-
-                    int markerClick = Log.v("click", "Markerclick");
-                    Intent intent = new Intent(MapsActivity.this, LandmarkPopUpActivity.class);
-                    intent.putExtra("landmarkID", marker.getId().substring(1));
-                    startActivity(intent);
-                    return false;
+                int markerClick = Log.v("click", "Markerclick");
+                Intent intent = new Intent(MapsActivity.this, LandmarkPopUpActivity.class);
+                intent.putExtra("landmarkID", marker.getId().substring(1));
+                startActivity(intent);
+                return false;
 
 
             }
@@ -187,4 +192,52 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onPause();
         locationClient.removeLocationUpdates(locationCallback);
     }
+/*
+    private void enableUserLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        } else {
+            //ask for permission
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                //explain
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_LOCATION);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_LOCATION);
+
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSION_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                mMap.setMyLocationEnabled(true);
+            }else{
+
+            }
+        }
+    }*/
+    private void addCircle(LatLng latLng,float radius){
+        CircleOptions circleOptions=new CircleOptions();
+        circleOptions.center(latLng);
+        circleOptions.radius(radius);
+        circleOptions.strokeColor(Color.argb(255,255,0,0));
+        circleOptions.fillColor(Color.argb(64,255,0,0));
+        circleOptions.strokeWidth(4);
+        mMap.addCircle(circleOptions);
+    }
+
+
 }
